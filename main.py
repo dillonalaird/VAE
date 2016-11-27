@@ -18,6 +18,7 @@ flags.DEFINE_integer("z_dim", 2, "The size of the latent space [2]")
 flags.DEFINE_integer("epochs", 12, "The number of epochs [12]")
 flags.DEFINE_integer("batch_size", 128, "The batch size [128]")
 flags.DEFINE_float("lr", 0.01, "The learning rate [0.01]")
+flags.DEFINE_boolean("test", False, "Run algorithm on test set [False]")
 flags.DEFINE_boolean("sample", False, "Sample random data point [False]")
 flags.DEFINE_boolean("sample_manifold", False, "Sample the unit square on z [False]")
 
@@ -67,13 +68,16 @@ def main(_):
     config.x_dim = 784
 
     with tf.Session() as sess:
-        vae = VAE(config, sess, get_model_dir(config, ["sample", "sample_manifold", "batch_size"]))
+        vae = VAE(config, sess, get_model_dir(config, ["test", "sample", "sample_manifold", "batch_size"]))
         if config.sample:
             vae.load()
             sample_image(vae)
         elif config.sample_manifold:
             vae.load()
             sample_manifold2d(vae, 20)
+        elif config.test:
+            vae.load()
+            vae.test(mnist)
         else:
             vae.train(mnist)
 
