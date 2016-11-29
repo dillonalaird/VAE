@@ -73,7 +73,7 @@ class VAE(object):
         log_sig2, sig2, mu2, z = self.encode(self.x)
         y = self.decode(z)
         log_pz = tf.reduce_sum(self.x*tf.log(y) + (1 - self.x)*tf.log(1 - y), 1)
-        KL = -0.5*tf.reduce_sum(1 + log_sig2 - mu2 - sig2, 1)
+        KL = 0.5*tf.reduce_sum(1 + log_sig2 - mu2 - sig2, 1)
 
         self.sampled = self.decode(self.z)
         self.loss = -tf.reduce_sum(KL + log_pz)/self.batch_size
