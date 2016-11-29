@@ -59,7 +59,7 @@ class VAE(object):
             log_sig2 = tf.matmul(h, self.W5) + self.b5
             sig2     = tf.exp(log_sig2)
             sig      = tf.exp(0.5*log_sig2)
-            eps      = tf.random_normal([self.z_dim], mean=0.0, stddev=1.0)
+            eps      = tf.random_normal([self.batch_size, self.z_dim], mean=0.0, stddev=1.0)
             z = mu + sig*eps
         return log_sig2, sig2, mu2, z
 
@@ -73,7 +73,7 @@ class VAE(object):
         log_sig2, sig2, mu2, z = self.encode(self.x)
         y = self.decode(z)
         log_pz = tf.reduce_sum(self.x*tf.log(y) + (1 - self.x)*tf.log(1 - y), 1)
-        KL = tf.reduce_sum(1 + log_sig2 - mu2 - sig2, 1)
+        KL = -0.5*tf.reduce_sum(1 + log_sig2 - mu2 - sig2, 1)
 
         self.sampled = self.decode(self.z)
         self.loss = -tf.reduce_sum(KL + log_pz)/self.batch_size
